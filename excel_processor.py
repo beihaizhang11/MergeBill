@@ -141,8 +141,8 @@ class ExcelProcessor:
             ws = wb.active
             ws.title = "合并结果"
             
-            # 写入表头（添加"结算金额"列）
-            headers = ["文件名"] + [m['name'] for m in mappings] + ["结算金额"]
+            # 写入表头（添加"序号"列作为第一列，以及"结算金额"列）
+            headers = ["序号", "文件名"] + [m['name'] for m in mappings] + ["结算金额"]
             for col_idx, header in enumerate(headers, start=1):
                 ws.cell(row=1, column=col_idx, value=header)
                 # 设置表头样式
@@ -156,6 +156,7 @@ class ExcelProcessor:
             
             # 处理每个文件
             current_row = 2
+            serial_number = 1  # 递增序号
             for file_path in file_list:
                 try:
                     data = self.extract_data_from_file(
@@ -165,9 +166,14 @@ class ExcelProcessor:
                     if data:
                         # 写入数据行
                         for col_idx, header in enumerate(headers, start=1):
-                            value = data.get(header)
-                            ws.cell(row=current_row, column=col_idx, value=value)
+                            if header == "序号":
+                                # 第一列写入递增序号
+                                ws.cell(row=current_row, column=col_idx, value=serial_number)
+                            else:
+                                value = data.get(header)
+                                ws.cell(row=current_row, column=col_idx, value=value)
                         
+                        serial_number += 1  # 序号递增
                         current_row += 1
                         result["success_count"] += 1
                         result["data"].append(data)
