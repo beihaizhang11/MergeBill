@@ -164,13 +164,10 @@ class MergeBillApp:
         files = []
         data = data.strip()
         
-        # Windows路径可能用{}包裹
-        if data.startswith('{') and data.endswith('}'):
-            data = data[1:-1]
-        
         # 分割多个文件
         import re
         # 匹配被{}包裹的路径或空格分隔的路径
+        # 注意：不要预先去掉首尾的{}，让正则表达式正确处理每个路径
         pattern = r'\{([^}]+)\}|([^\s]+)'
         matches = re.findall(pattern, data)
         
